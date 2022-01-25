@@ -2,11 +2,14 @@
   "name": "roslyn",
   "version": "1.0.0",
   "description": "roslyn bot",
-  "main": "src/bot.js",
+  "main": "dist/bot.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/bot.js",
-    "deploy-commands": "node src/deploy-commands.js"
+    "watch": "tsc -p tsconfig.json -w",
+    "prestart": "npm run build",
+    "start": "node .",
+    "deploy-commands": "npm run build && node dist/deploy-commands.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,8 @@
     "@discordjs/rest": "^0.2.0-canary.0",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
   }
 }
