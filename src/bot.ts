@@ -1,4 +1,6 @@
-const { Client, Intents } = require('discord.js')
+import { Client, Intents } from 'discord.js'
+import { getCommands } from './helpers'
+
 const { token } = require('../config.json')
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
@@ -7,14 +9,14 @@ client.once('ready', () => {
     console.log('Ready')
 })
 
+const commands = getCommands()
+
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return
 
     const { commandName } = interaction
 
-    if (commandName === 'test') {
-        await interaction.reply('test successful')
-    }
+    await commands.get(commandName).execute(interaction)
 })
 
 client.login(token)
