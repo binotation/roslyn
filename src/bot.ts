@@ -5,7 +5,7 @@ import { MusicSubscription } from './commands/music/subscription'
 
 const { token } = require('../config.json')
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] })
 
 globalThis.subscriptions = new Map<Snowflake, MusicSubscription>()
 
