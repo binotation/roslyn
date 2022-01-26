@@ -1,22 +1,17 @@
 import { Client, Intents } from 'discord.js'
-import { getCommands } from './helpers'
+import events from './events/events'
 
 const { token } = require('../config.json')
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
 
-client.once('ready', () => {
-    console.log('Ready')
-})
-
-const commands = getCommands()
-
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return
-
-    const { commandName } = interaction
-
-    await commands.get(commandName).execute(interaction)
-})
+// Attach event handlers
+for (const event of events) {
+	if (event[1].once) {
+		client.once(event[0], (...args) => event[1].execute(...args))
+	} else {
+		client.on(event[0], (...args) => event[1].execute(...args))
+	}
+}
 
 client.login(token)
