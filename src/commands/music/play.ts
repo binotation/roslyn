@@ -3,18 +3,31 @@ import { entersState, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { MusicSubscription } from './subscription'
 import { Track } from './track'
+const yts = require('yt-search')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
         .setDescription('Play music')
-        .addStringOption(option => option.setName('url').setDescription('url of song').setRequired(true)),
+        .addStringOption(option => option.setName('track').setDescription('youtube link or track title').setRequired(true)),
 
     async execute(interaction: CommandInteraction) {
 
         await interaction.deferReply()
+        let url: string;
+        const track = interaction.options.get('track')!.value as string
+        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}?v=\w+[\w&=]*$/i
+        if (ytUrlRegex.test(track)) {
+            url = track
+        } else {
+            const r = await yts(track)
+            url = r.videos[0].url
 
-        const url = interaction.options.get('url')!.value as string ?? ''
+            if (!url) {
+                await interaction.reply('Song could not be found')
+                return
+            }
+        }
 
         if (!globalThis.subscription) {
             if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
