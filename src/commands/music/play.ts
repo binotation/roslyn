@@ -55,7 +55,7 @@ const play: Command = {
             await entersState(globalThis.subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
         } catch (error) {
             console.warn(error)
-            await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later')
+            await interaction.followUp('Failed to join voice channel (20s timeout), please try again later')
             return
         }
 
@@ -73,10 +73,10 @@ const play: Command = {
             })
 
             globalThis.subscription.enqueue(track)
-            await interaction.followUp(`Enqueued **${track.url}**`)
+            await interaction.followUp(`Added **${track.url}**`)
         } catch (error) {
             console.warn(error)
-            await interaction.followUp(`Failed to play track, please try again later!`)
+            await interaction.followUp(`Failed to play track, please try again later`)
         }
     }
 }
