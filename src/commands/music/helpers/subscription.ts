@@ -33,12 +33,14 @@ export class MusicSubscription {
                         await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000)
                     } catch {
                         this.voiceConnection.destroy()
+                        globalThis.subscription = null
                     }
                 } else if (this.voiceConnection.rejoinAttempts < 5) {
                     await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000)
                     this.voiceConnection.rejoin()
                 } else {
                     this.voiceConnection.destroy()
+                    globalThis.subscription = null
                 }
             } else if (newState.status === VoiceConnectionStatus.Destroyed) {
                 this.stop()
