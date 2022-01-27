@@ -1,7 +1,8 @@
 import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { Command } from '../../types'
 
-module.exports = {
+const leave: Command = {
     data: new SlashCommandBuilder()
         .setName('leave')
         .setDescription('Tell me to leave'),
@@ -16,3 +17,5 @@ module.exports = {
         }
     }
 }
+
+export default leave

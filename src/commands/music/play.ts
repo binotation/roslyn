@@ -1,27 +1,29 @@
 import { CommandInteraction, GuildMember, VoiceBasedChannel } from 'discord.js'
 import { entersState, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { MusicSubscription } from './subscription'
-import { Track } from './track'
+import { Command } from '../../types'
+import { MusicSubscription } from './helpers/subscription'
+import { Track } from './helpers/track'
 const yts = require('yt-search')
 
-module.exports = {
+const play: Command = {
     data: new SlashCommandBuilder()
-        .setName('play')
-        .setDescription('Play music')
+        .setName('p')
+        .setDescription('Play music: enter youtube link or track title')
         .addStringOption(option => option.setName('track').setDescription('youtube link or track title').setRequired(true)),
 
     async execute(interaction: CommandInteraction) {
-
         await interaction.deferReply()
+
+        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}?v=\w+[\w&=]*$/i
         let url: string;
         const track = interaction.options.get('track')!.value as string
-        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}?v=\w+[\w&=]*$/i
+
         if (ytUrlRegex.test(track)) {
             url = track
         } else {
             const r = await yts(track)
-            url = r.videos[0].url
+            url = r?.videos[0]?.url
 
             if (!url) {
                 await interaction.reply('Song could not be found')
@@ -78,3 +80,5 @@ module.exports = {
         }
     }
 }
+
+export default play

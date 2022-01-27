@@ -1,5 +1,5 @@
 import { Client, Intents } from 'discord.js'
-import events from './events/events'
+import events from './events'
 
 const { token } = require('../config.json')
 

@@ -1,7 +1,8 @@
 import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { Command } from '../../types'
 
-module.exports = {
+const skip: Command = {
     data: new SlashCommandBuilder()
         .setName('skip')
         .setDescription('Skip current track'),
@@ -9,9 +10,11 @@ module.exports = {
     async execute(interaction: CommandInteraction) {
         if (globalThis.subscription) {
             globalThis.subscription.audioPlayer.stop()
-            await interaction.reply({ content: 'Skipped song', ephemeral: true })
+            await interaction.reply({ content: 'Thank u, next', ephemeral: true })
         } else {
-            await interaction.reply({ content: 'Not currently playing', ephemeral: true })
+            await interaction.reply({ content: '?', ephemeral: true })
         }
     }
 }
+
+export default skip

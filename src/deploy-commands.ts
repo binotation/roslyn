@@ -1,6 +1,6 @@
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
-import commands from './commands/commands'
+import commands from './commands'
 
 const { clientId, token, guildId } = require('../config.json')
 
