@@ -15,7 +15,7 @@ const play: Command = {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}?v=\w+[\w&=]*$/i
+        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+[\w&=]*$/i
         let url: string;
         const track = interaction.options.get('track')!.value as string
 
