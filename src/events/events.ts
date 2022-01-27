@@ -1,4 +1,4 @@
-import { Collection } from "discord.js"
+import { Collection } from 'discord.js'
 
 const ready = require('./ready')
 const interactionCreate = require('./interactionCreate')

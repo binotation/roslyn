@@ -8,5 +8,5 @@ const commandsJson = commands.map(command => command.data.toJSON())
 
 const rest = new REST().setToken(token)
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandsJson })
-	.then(() => console.log('Registered application commands.'))
-	.catch(console.error)
+    .then(() => console.log('Registered application commands.'))
+    .catch(console.error)
