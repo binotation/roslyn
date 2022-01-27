@@ -1,4 +1,3 @@
-/// <reference path="../../bot.ts" />
 import { CommandInteraction, GuildMember, VoiceBasedChannel } from 'discord.js'
 import { entersState, joinVoiceChannel, VoiceConnectionStatus } from '@discordjs/voice'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -12,15 +11,15 @@ module.exports = {
         .addStringOption(option => option.setName('url').setDescription('url of song').setRequired(true)),
 
     async execute(interaction: CommandInteraction) {
-        let subscription = globalThis.subscriptions.get(interaction.guildId)
+
         await interaction.deferReply()
 
         const url = interaction.options.get('url')!.value as string ?? ''
 
-        if (!subscription) {
+        if (!globalThis.subscription) {
             if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
                 const channel: VoiceBasedChannel = interaction.member.voice.channel
-                subscription = new MusicSubscription(
+                globalThis.subscription = new MusicSubscription(
                     joinVoiceChannel({
                         channelId: channel.id,
                         guildId: channel.guild.id,
@@ -28,18 +27,17 @@ module.exports = {
                     })
                 )
 
-                subscription.voiceConnection.on('error', console.warn)
-                subscriptions.set(interaction.guildId, subscription)
+                globalThis.subscription.voiceConnection.on('error', console.warn)
             }
         }
 
-        if (!subscription) {
+        if (!globalThis.subscription) {
             await interaction.followUp('join a channel idiot')
             return;
         }
 
         try {
-            await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
+            await entersState(globalThis.subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
         } catch (error) {
             console.warn(error)
             await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later')
@@ -59,7 +57,7 @@ module.exports = {
                 }
             })
 
-            subscription.enqueue(track)
+            globalThis.subscription.enqueue(track)
             await interaction.followUp(`Enqueued **${track.url}**`)
         } catch (error) {
             console.warn(error)

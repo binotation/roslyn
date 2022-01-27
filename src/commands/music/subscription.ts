@@ -6,8 +6,7 @@ import {
     entersState,
     VoiceConnection,
     VoiceConnectionDisconnectReason,
-    VoiceConnectionStatus,
-    VoiceConnectionState
+    VoiceConnectionStatus
 } from '@discordjs/voice'
 import type { Track } from './track'
 import { promisify } from 'node:util'
