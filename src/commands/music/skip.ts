@@ -7,12 +7,11 @@ module.exports = {
         .setDescription('Skip current track'),
 
     async execute(interaction: CommandInteraction) {
-
         if (globalThis.subscription) {
             globalThis.subscription.audioPlayer.stop()
-            await interaction.reply('Skipped song')
+            await interaction.reply({ content: 'Skipped song', ephemeral: true })
         } else {
-            await interaction.reply('Not currently playing')
+            await interaction.reply({ content: 'Not currently playing', ephemeral: true })
         }
     }
 }
