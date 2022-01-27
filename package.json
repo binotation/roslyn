@@ -1,6 +1,5 @@
 {
   "name": "roslyn",
-  "version": "1.0.0",
   "description": "roslyn bot",
   "main": "dist/bot.js",
   "scripts": {
