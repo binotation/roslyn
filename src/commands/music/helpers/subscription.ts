@@ -21,8 +21,8 @@ export class MusicSubscription {
     public readonly audioPlayer: AudioPlayer;
 
     public queue: Track[]
-    public queueLock = false;
-    public readyLock = false;
+    private queueLock = false
+    private readyLock = false
 
     public constructor(voiceConnection: VoiceConnection) {
         this.voiceConnection = voiceConnection
