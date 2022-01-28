@@ -7,11 +7,13 @@ import flirt from './commands/flirt'
 import play from './commands/music/play'
 import skip from './commands/music/skip'
 import leave from './commands/music/leave'
+import queue from './commands/music/queue'
 
 const commands = new Collection<string, Command>()
 commands.set(flirt.data.name, flirt)
 commands.set(play.data.name, play)
 commands.set(skip.data.name, skip)
 commands.set(leave.data.name, leave)
+commands.set(queue.data.name, queue)
 
 export default commands
