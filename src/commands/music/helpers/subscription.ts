@@ -1,12 +1,15 @@
 import {
     AudioPlayer,
     AudioPlayerStatus,
+    AudioPlayerState,
     AudioResource,
     createAudioPlayer,
+    AudioPlayerError,
     entersState,
     VoiceConnection,
     VoiceConnectionDisconnectReason,
-    VoiceConnectionStatus
+    VoiceConnectionStatus,
+    VoiceConnectionState
 } from '@discordjs/voice'
 import type { Track } from './track'
 import { promisify } from 'node:util'
@@ -26,9 +29,12 @@ export class MusicSubscription {
         this.audioPlayer = createAudioPlayer()
         this.queue = []
 
-        this.voiceConnection.on('stateChange', async (_: any, newState: any) => {
+        this.voiceConnection.on('stateChange', async (_: any, newState: VoiceConnectionState) => {
+
             if (newState.status === VoiceConnectionStatus.Disconnected) {
+
                 if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
+                    // Wait for reconnect attempt
                     try {
                         await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000)
                     } catch {
@@ -42,12 +48,12 @@ export class MusicSubscription {
                     this.voiceConnection.destroy()
                     globalThis.subscription = null
                 }
+
             } else if (newState.status === VoiceConnectionStatus.Destroyed) {
                 this.stop()
-            } else if (
-                !this.readyLock &&
-                (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)
-            ) {
+            } else if (!this.readyLock &&
+                (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)) {
+
                 this.readyLock = true
                 try {
                     await entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000)
@@ -57,19 +63,19 @@ export class MusicSubscription {
                     this.readyLock = false
                 }
             }
+
         });
 
-        this.audioPlayer.on('stateChange', (oldState: any, newState: any) => {
+        this.audioPlayer.on('stateChange', (oldState: AudioPlayerState, newState: AudioPlayerState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-                (oldState.resource as AudioResource<Track>).metadata.onFinish()
+                // From not idle to idle: track has finished playing
                 this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 (newState.resource as AudioResource<Track>).metadata.onStart()
             }
         })
 
-        this.audioPlayer.on('error', (error: any) => (error.resource as AudioResource<Track>).metadata.onError(error))
-
+        this.audioPlayer.on('error', (error: AudioPlayerError) => (error.resource as AudioResource<Track>).metadata.onError(error))
         voiceConnection.subscribe(this.audioPlayer)
     }
 
@@ -88,10 +94,9 @@ export class MusicSubscription {
         if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle || this.queue.length === 0) {
             return
         }
-
         this.queueLock = true
-
         const nextTrack = this.queue.shift()!
+
         try {
             const resource = await nextTrack.createAudioResource()
             this.audioPlayer.play(resource)

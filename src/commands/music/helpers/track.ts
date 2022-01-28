@@ -4,34 +4,31 @@ import { exec as ytdlExec } from 'youtube-dl-exec'
 const noop = () => { }
 
 export interface TrackData {
-    url: string;
-    onStart: () => void;
-    onFinish: () => void;
-    onError: (err: Error) => void;
+    url: string,
+    title: string,
+    onStart: () => void,
+    onError: (err: Error) => void,
 }
 
 export class Track implements TrackData {
-    public readonly url: string;
-    public readonly onStart: () => void;
-    public readonly onFinish: () => void;
-    public readonly onError: (err: Error) => void;
+    public readonly url: string
+    public readonly title: string
+    public readonly onStart: () => void
+    public readonly onError: (err: Error) => void
 
-    private constructor({ url, onStart, onFinish, onError }: TrackData) {
-        this.url = url;
-        this.onStart = onStart;
-        this.onFinish = onFinish;
-        this.onError = onError;
+    private constructor({ url, title, onStart, onError }: TrackData) {
+        this.url = url
+        this.title = title
+        this.onStart = onStart
+        this.onError = onError
     }
 
-    public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
+    public static async from(url: string, title: string, methods: Pick<Track, 'onStart' | 'onError'>): Promise<Track> {
+        // Wrap methods to ensure they are called only once
         const wrappedMethods = {
             onStart() {
                 wrappedMethods.onStart = noop
                 methods.onStart()
-            },
-            onFinish() {
-                wrappedMethods.onFinish = noop
-                methods.onFinish()
             },
             onError(err: Error) {
                 wrappedMethods.onError = noop
@@ -39,7 +36,7 @@ export class Track implements TrackData {
             }
         };
 
-        return new Track({ url, ...wrappedMethods })
+        return new Track({ url, title, ...wrappedMethods })
     }
 
     public createAudioResource(): Promise<AudioResource<Track>> {

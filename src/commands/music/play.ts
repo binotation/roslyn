@@ -14,21 +14,27 @@ const play: Command = {
 
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
+        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+.*$/i
 
-        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+[\w&=]*$/i
-        let url: string;
+        let url: string | undefined
+        let title: string | undefined
         const track = interaction.options.get('track')!.value as string
 
         if (ytUrlRegex.test(track)) {
             url = track
+            const params = new URLSearchParams(url.substring(url.indexOf('?') + 1))
+            const v = await yts({ videoId: params.get('v') })
+            title = v?.title
         } else {
             const r = await yts(track)
-            url = r?.videos[0]?.url
+            const video = r?.videos[0]
+            url = video?.url
+            title = video?.title
+        }
 
-            if (!url) {
-                await interaction.reply('Song could not be found')
-                return
-            }
+        if (!url || !title) {
+            await interaction.reply('Song could not be found')
+            return
         }
 
         if (!globalThis.subscription) {
@@ -60,12 +66,9 @@ const play: Command = {
         }
 
         try {
-            const track = await Track.from(url, {
+            const track = await Track.from(url, title, {
                 onStart() {
-                    interaction.followUp({ content: 'Now playing!', ephemeral: true, }).catch(console.warn)
-                },
-                onFinish() {
-                    interaction.followUp({ content: 'Now finished!', ephemeral: true }).catch(console.warn)
+                    interaction.followUp({ content: `Now playing ${track.title}`, ephemeral: true, }).catch(console.warn)
                 },
                 onError(err: Error) {
                     interaction.followUp({ content: `Error: ${err.message}`, ephemeral: true }).catch(console.warn)
