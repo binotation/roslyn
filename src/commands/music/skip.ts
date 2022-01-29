@@ -10,7 +10,7 @@ const skip: Command = {
     async execute(interaction: CommandInteraction) {
         if (globalThis.subscription) {
             globalThis.subscription.audioPlayer.stop()
-            await interaction.reply({ content: 'Thank u, next', ephemeral: true })
+            await interaction.reply({ content: 'Thank u, next' })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }

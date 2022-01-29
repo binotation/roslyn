@@ -1,6 +1,7 @@
 import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { Command } from '../../types'
+import createQueueEmbed from './helpers/createQueueEmbed'
 
 const remove: Command = {
     data: new SlashCommandBuilder()
@@ -15,7 +16,8 @@ const remove: Command = {
         const pattern = interaction.options.get('pattern')!.value as string
         if (globalThis.subscription) {
             globalThis.subscription.removeTracks(pattern)
-            await interaction.reply({ content: '👍', ephemeral: true })
+            const queueEmbed = createQueueEmbed(globalThis.subscription)
+            await interaction.reply({ content: '👍', embeds: [queueEmbed] })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }

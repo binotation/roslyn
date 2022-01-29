@@ -10,7 +10,7 @@ const pause: Command = {
     async execute(interaction: CommandInteraction) {
         if (globalThis.subscription) {
             globalThis.subscription.audioPlayer.pause()
-            await interaction.reply({ content: '👍', ephemeral: true })
+            await interaction.reply({ content: 'Paused' })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }

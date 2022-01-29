@@ -11,7 +11,7 @@ const leave: Command = {
         if (globalThis.subscription) {
             globalThis.subscription.voiceConnection.destroy()
             globalThis.subscription = null
-            await interaction.reply({ content: 'Bye ^^', ephemeral: true })
+            await interaction.reply({ content: 'Bye ^^' })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }

@@ -10,7 +10,7 @@ const resume: Command = {
     async execute(interaction: CommandInteraction) {
         if (globalThis.subscription) {
             globalThis.subscription.audioPlayer.unpause()
-            await interaction.reply({ content: '👍', ephemeral: true })
+            await interaction.reply({ content: '👍' })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }
