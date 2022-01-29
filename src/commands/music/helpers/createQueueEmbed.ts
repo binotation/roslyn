@@ -21,6 +21,6 @@ export default function createQueueEmbed(subscription: MusicSubscription): Messa
         color: '#ff006c',
         title: 'Now playing 🎵😜😳',
         description: nowPlaying,
-        fields: !queueFields ? undefined : [{ name: 'This is pretty cool', value: queueFields }]
+        fields: !queueFields ? undefined : [{ name: 'Queue', value: queueFields }]
     }
 }

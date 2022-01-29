@@ -17,7 +17,7 @@ const remove: Command = {
         if (globalThis.subscription) {
             globalThis.subscription.removeTracks(pattern)
             const queueEmbed = createQueueEmbed(globalThis.subscription)
-            await interaction.reply({ content: '👍', embeds: [queueEmbed] })
+            await interaction.reply({ content: `Removed track/s #${pattern}`, embeds: [queueEmbed] })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }
