@@ -106,6 +106,11 @@ export class MusicSubscription {
         }
     }
 
+    public jumpQueue(track: number) {
+        this.queue = this.queue.concat(this.queue.splice(0, track - 1))
+        this.audioPlayer.stop()
+    }
+
     public stop() {
         this.queueLock = true
         this.queue = []

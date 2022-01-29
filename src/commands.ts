@@ -11,6 +11,7 @@ import queue from './commands/music/queue'
 import pause from './commands/music/pause'
 import resume from './commands/music/resume'
 import remove from './commands/music/remove'
+import jump from './commands/music/jump'
 
 const commands = new Collection<string, Command>()
 commands.set(flirt.data.name, flirt)
@@ -21,5 +22,6 @@ commands.set(queue.data.name, queue)
 commands.set(pause.data.name, pause)
 commands.set(resume.data.name, resume)
 commands.set(remove.data.name, remove)
+commands.set(jump.data.name, jump)
 
 export default commands
