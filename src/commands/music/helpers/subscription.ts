@@ -84,6 +84,28 @@ export class MusicSubscription {
         this.processQueue()
     }
 
+    public removeTracks(pattern: string) {
+        pattern = pattern.replaceAll(' ', '')
+        const format = /(\d+-\d+,|\d+,)*(\d+-\d+|\d+),{0,1}/
+
+        if (format.test(pattern)) {
+            const patternArr = pattern.split(',')
+
+            for (const cell of patternArr) {
+                if (cell.includes('-')) {
+                    const rangeArr = cell.split('-') as any[]
+                    for (let i = Math.min(...rangeArr); i <= Math.max(...rangeArr); i++) {
+                        delete this.queue[i - 1]
+                    }
+                } else {
+                    delete this.queue[Number(cell) - 1]
+                }
+            }
+
+            this.queue = this.queue.filter(track => track !== undefined)
+        }
+    }
+
     public stop() {
         this.queueLock = true
         this.queue = []
