@@ -1,6 +1,5 @@
 {
   "name": "roslyn",
-  "version": "1.0.0",
   "description": "roslyn bot",
   "main": "dist/bot.js",
   "scripts": {
@@ -23,9 +22,14 @@
   "homepage": "https://github.com/binotation/roslyn#readme",
   "dependencies": {
     "@discordjs/builders": "^0.11.0",
+    "@discordjs/opus": "^0.5.3",
     "@discordjs/rest": "^0.2.0-canary.0",
+    "@discordjs/voice": "^0.8.0",
     "discord-api-types": "^0.26.1",
-    "discord.js": "^13.6.0"
+    "discord.js": "^13.6.0",
+    "sodium": "^3.0.2",
+    "youtube-dl-exec": "^2.0.2",
+    "yt-search": "^2.10.3"
   },
   "devDependencies": {
     "typescript": "^4.5.5"

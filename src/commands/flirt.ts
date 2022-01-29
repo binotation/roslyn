@@ -1,7 +1,8 @@
 import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
+import { Command } from '../types'
 
-module.exports = {
+const flirt: Command = {
     data: new SlashCommandBuilder()
         .setName('flirt')
         .setDescription('Test me'),
@@ -10,3 +11,5 @@ module.exports = {
         await interaction.reply('Hey you ;)')
     }
 }
+
+export default flirt
