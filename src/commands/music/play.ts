@@ -65,7 +65,7 @@ const play: Command = {
         }
 
         if (!url || !title) {
-            await interaction.reply('Song could not be found')
+            await interaction.followUp('Song could not be found')
             return
         } else {
             try {
