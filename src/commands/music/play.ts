@@ -6,7 +6,7 @@ import { MusicSubscription } from './helpers/subscription'
 import { Track } from './helpers/track'
 const yts = require('yt-search')
 
-const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+.*$/i
+const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})(music.){0,1}youtube.com\/watch\/{0,1}\?v=\w+.*$/i
 
 const play: Command = {
     data: new SlashCommandBuilder()
