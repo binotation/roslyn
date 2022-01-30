@@ -92,11 +92,6 @@ export class MusicSubscription {
         voiceConnection.subscribe(this.audioPlayer)
     }
 
-    public enqueue(track: Track) {
-        this.queue.push(track)
-        this.processQueue()
-    }
-
     public removeTracks(pattern: string) {
         pattern = pattern.replaceAll(' ', '')
         const format = /(\d+-\d+,|\d+,)*(\d+-\d+|\d+),{0,1}/
@@ -128,6 +123,11 @@ export class MusicSubscription {
         this.queueLock = true
         this.queue = []
         this.audioPlayer.stop(true)
+    }
+
+    public enqueue(track: Track) {
+        this.queue.push(track)
+        this.processQueue()
     }
 
     private async processQueue(): Promise<void> {
