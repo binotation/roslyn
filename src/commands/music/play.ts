@@ -68,10 +68,10 @@ const play: Command = {
         try {
             const track = await Track.from(url, title, {
                 onStart() {
-                    interaction.followUp({ content: `Now playing ${track.title}` }).catch(console.warn)
+                    interaction.channel?.send({ content: `Now playing **[${track.title}](${track.url})**` }).catch(console.warn)
                 },
                 onError(err: Error) {
-                    interaction.followUp({ content: `Error: ${err.message}`, ephemeral: true }).catch(console.warn)
+                    interaction.channel?.send({ content: `Error: ${err.message}` }).catch(console.warn)
                 }
             })
 
