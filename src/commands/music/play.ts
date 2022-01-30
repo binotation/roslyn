@@ -6,6 +6,8 @@ import { MusicSubscription } from './helpers/subscription'
 import { Track } from './helpers/track'
 const yts = require('yt-search')
 
+const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+.*$/i
+
 const play: Command = {
     data: new SlashCommandBuilder()
         .setName('p')
@@ -14,11 +16,41 @@ const play: Command = {
 
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
-        const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})youtube.com\/watch\/{0,1}\?v=\w+.*$/i
 
+        // Create subscription if none
+        if (!globalThis.subscription) {
+
+            if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+                const channel: VoiceBasedChannel = interaction.member.voice.channel
+                globalThis.subscription = new MusicSubscription(
+                    joinVoiceChannel({
+                        channelId: channel.id,
+                        guildId: channel.guild.id,
+                        adapterCreator: channel.guild.voiceAdapterCreator
+                    })
+                )
+
+                globalThis.subscription.voiceConnection.on('error', console.warn)
+            }
+
+            if (!globalThis.subscription) {
+                await interaction.followUp('join a channel idiot')
+                return
+            } else {
+                try {
+                    await entersState(globalThis.subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
+                } catch (error) {
+                    console.warn(error)
+                    await interaction.followUp('Failed to join voice channel (20s timeout), please try again later')
+                    return
+                }
+            }
+        }
+
+        // Create Track and enqueue
         let url: string | undefined
         let title: string | undefined
-        const track = interaction.options.get('track')!.value as string
+        const track = interaction.options.getString('track')!
 
         if (ytUrlRegex.test(track)) {
             url = track
@@ -35,51 +67,23 @@ const play: Command = {
         if (!url || !title) {
             await interaction.reply('Song could not be found')
             return
-        }
+        } else {
+            try {
+                const track = await Track.from(url, title, {
+                    onStart() {
+                        interaction.channel?.send({ content: `Now playing **[${track.title}](${track.url})**` }).catch(console.warn)
+                    },
+                    onError(err: Error) {
+                        interaction.channel?.send({ content: `Error: ${err.message}` }).catch(console.warn)
+                    }
+                })
 
-        if (!globalThis.subscription) {
-            if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
-                const channel: VoiceBasedChannel = interaction.member.voice.channel
-                globalThis.subscription = new MusicSubscription(
-                    joinVoiceChannel({
-                        channelId: channel.id,
-                        guildId: channel.guild.id,
-                        adapterCreator: channel.guild.voiceAdapterCreator
-                    })
-                )
-
-                globalThis.subscription.voiceConnection.on('error', console.warn)
+                globalThis.subscription.enqueue(track)
+                await interaction.followUp(`Added **${track.url}**`)
+            } catch (error) {
+                console.warn(error)
+                await interaction.followUp(`Failed to play track, please try again later`)
             }
-        }
-
-        if (!globalThis.subscription) {
-            await interaction.followUp('join a channel idiot')
-            return;
-        }
-
-        try {
-            await entersState(globalThis.subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3)
-        } catch (error) {
-            console.warn(error)
-            await interaction.followUp('Failed to join voice channel (20s timeout), please try again later')
-            return
-        }
-
-        try {
-            const track = await Track.from(url, title, {
-                onStart() {
-                    interaction.channel?.send({ content: `Now playing **[${track.title}](${track.url})**` }).catch(console.warn)
-                },
-                onError(err: Error) {
-                    interaction.channel?.send({ content: `Error: ${err.message}` }).catch(console.warn)
-                }
-            })
-
-            globalThis.subscription.enqueue(track)
-            await interaction.followUp(`Added **${track.url}**`)
-        } catch (error) {
-            console.warn(error)
-            await interaction.followUp(`Failed to play track, please try again later`)
         }
     }
 }
