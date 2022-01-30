@@ -123,7 +123,6 @@ export class MusicSubscription {
         }
         this.queueLock = true
         const nextTrack = this.queue.shift()!
-        this.queue.push(nextTrack)
 
         try {
             const resource = await nextTrack.createAudioResource()
