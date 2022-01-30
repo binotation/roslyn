@@ -11,16 +11,22 @@ import {
     VoiceConnectionStatus,
     VoiceConnectionState
 } from '@discordjs/voice'
+import { RepeatMode } from '../../../types'
 import type { Track } from './track'
 import { promisify } from 'node:util'
 
 const wait = promisify(setTimeout)
 
+// Represents a voice connection subscription to an audio player
 export class MusicSubscription {
-    public readonly voiceConnection: VoiceConnection;
-    public readonly audioPlayer: AudioPlayer;
+    public readonly voiceConnection: VoiceConnection
+    public readonly audioPlayer: AudioPlayer
 
     public queue: Track[]
+    public flags = {
+        repeatMode: RepeatMode.Normal
+    }
+
     private queueLock = false
     private readyLock = false
 
@@ -69,6 +75,13 @@ export class MusicSubscription {
         this.audioPlayer.on('stateChange', (oldState: AudioPlayerState, newState: AudioPlayerState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                 // From not idle to idle: track has finished playing
+                const repeatMode = this.flags.repeatMode
+                if (repeatMode === RepeatMode.RepeatQueue) {
+                    this.queue.push(oldState.resource.metadata as Track)
+                }
+                else if (repeatMode === RepeatMode.RepeatTrack) {
+                    this.queue = [oldState.resource.metadata as Track].concat(this.queue)
+                }
                 this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 (newState.resource as AudioResource<Track>).metadata.onStart()
