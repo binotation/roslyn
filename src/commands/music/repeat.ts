@@ -20,7 +20,7 @@ const repeat: Command = {
         if (globalThis.subscription) {
             const option = interaction.options.getString('option')! as RepeatMode
             globalThis.subscription.flags.repeatMode = option
-            await interaction.reply({ content: `Repeating ${option}` })
+            await interaction.reply({ content: `**Repeating: ${option}**` })
         } else {
             await interaction.reply({ content: '?', ephemeral: true })
         }
