@@ -14,4 +14,5 @@ This is a private discord music bot with plans for multi-purpose functionality i
     - `sudo apt install python-is-python3`
     - `npm i`
 2. Build `npm run build`
-3. Start `node .` or `node dist/bot.js`
+3. Run search server `node search/search.js`
+4. Start `node .` or `node dist/bot.js`
