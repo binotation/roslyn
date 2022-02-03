@@ -4,9 +4,9 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { Command } from '../../types'
 import { MusicSubscription } from './helpers/subscription'
 import { Track } from './helpers/track'
-const yts = require('yt-search')
+import axios from 'axios'
 
-const ytUrlRegex = /^(https:\/\/){0,1}(w{3}.|w{0})(music.){0,1}youtube.com\/watch\/{0,1}\?v=\w+.*$/i
+const port = require('../../../config.json').port
 
 const play: Command = {
     data: new SlashCommandBuilder()
@@ -48,28 +48,14 @@ const play: Command = {
         }
 
         // Create Track and enqueue
-        let url: string | undefined
-        let title: string | undefined
         const track = interaction.options.getString('track')!
 
-        if (ytUrlRegex.test(track)) {
-            url = track
-            const params = new URLSearchParams(url.substring(url.indexOf('?') + 1))
-            const v = await yts({ videoId: params.get('v') })
-            title = v?.title
-        } else {
-            const r = await yts(track)
-            const video = r?.videos[0]
-            url = video?.url
-            title = video?.title
-        }
+        const resp = await axios.get(`http://localhost:${port}?track="${track}"`)
+        const respBody: { url: string, title: string } = resp.data
 
-        if (!url || !title) {
-            await interaction.followUp('Song could not be found')
-            return
-        } else {
+        if (resp.status === 200) {
             try {
-                const track = await Track.from(url, title, {
+                const track = await Track.from(respBody.url, respBody.title, {
                     onStart() {
                         interaction.channel?.send({ content: `Now playing **[${track.title}](${track.url})**` }).catch(console.warn)
                     },
@@ -84,6 +70,8 @@ const play: Command = {
                 console.warn(error)
                 await interaction.followUp(`Failed to play track, please try again later`)
             }
+        } else {
+            await interaction.followUp('Song could not be found')
         }
     }
 }
