@@ -50,12 +50,12 @@ const play: Command = {
         // Create Track and enqueue
         const track = interaction.options.getString('track')!
 
-        const resp = await axios.get(`http://localhost:${port}?track="${track}"`)
-        const respBody: { url: string, title: string } = resp.data
+        const resp = await axios.get(`http://localhost:${port}?track=${encodeURIComponent(track)}`)
+        const { url, title, success }: { url: string, title: string, success: boolean } = resp.data
 
-        if (resp.status === 200) {
+        if (success) {
             try {
-                const track = await Track.from(respBody.url, respBody.title, {
+                const track = await Track.from(url, title, {
                     onStart() {
                         interaction.channel?.send({ content: `Now playing **[${track.title}](${track.url})**` }).catch(console.warn)
                     },
