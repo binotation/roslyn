@@ -1,5 +1,5 @@
 # Roslyn
-This is a private discord music bot with plans for multi-purpose functionality in the future.
+Discord music bot which uses slash commands. See `src/commands/` for commands.
 
 ## Dependencies
 - FFmpeg
